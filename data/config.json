@@ -1,18 +1,9 @@
 {
   "scoring": {
     "levelThresholds": {
-      "L": [
-        2,
-        3
-      ],
-      "M": [
-        4,
-        4
-      ],
-      "H": [
-        5,
-        6
-      ]
+      "L": [2, 3],
+      "M": [4, 4],
+      "H": [5, 6]
     },
     "levelNumeric": {
       "L": 1,
@@ -23,11 +14,32 @@
     "fallbackThreshold": 60
   },
   "display": {
-    "title": "ChuangBTI · 中国创始人人格整活测试",
-    "subtitle": "ChuangBTI（创始人特供·非 MBTI）：拿融资、撕条款、哄联创、赶路演、对账死线一锅炖的自黑脑回路——专为中国创业者调侃整活，搞笑版仅供娱乐。",
-    "author": "Remixed by [Koutian Wu](https://ktwu01.github.io/) · B站UP主@蛆肉儿串儿 原创",
-    "funNote": "本测试仅供娱乐，别拿它当创业融资判决书。",
-    "funNoteSpecial": "本测试仅供娱乐。敬局彩蛋与对不上账兜底都属于作者故意埋的损招，请勿把它当成医学、心理学、相学、命理学或灵异学依据。"
+    "title": "ChuangBTI · 创始人人格整活测试",
+    "subtitle": "ChuangBTI：专为创始人调侃整活的「创投圈脑回路」模型——拿融资、撕条款、哄联创、赶路演、对账死线一锅炖；与 MBTI 无关，纯属搞笑自黑，别当真。",
+    "author": "Remixed by <a href='https://ktwu01.github.io/' target='_blank'>Koutian Wu</a> · B站UP主@蛆肉儿串儿 原创",
+    "funNote": "本测试仅供娱乐，别拿它当创业融资判决书，更不是任何人格量表。<br> Remixed by <a href='https://ktwu01.github.io/' target='_blank'>Koutian Wu</a> @SP1 ",
+    "funNoteSpecial": "本测试仅供娱乐。敬局彩蛋与对不上账兜底都属于作者故意埋的损招；与 MBTI / 临床心理学无关，请勿当成诊断或命理依据。",
+    "ui": {
+      "introTitleHtml": "ChuangBTI<br/>创始人整活人格",
+      "introLead": "测的是你在创投饭局、条款桌和飞书里的「创始人版」脑回路——整活向 ChuangBTI，不是 MBTI。",
+      "resultKickerNormal": "你的 ChuangBTI 创始人原型",
+      "resultKickerDrunk": "敬局彩蛋 · ChuangBTI 隐藏款",
+      "resultKickerFallback": "十五维对不上账 · ChuangBTI 兜底款",
+      "dimensionsSectionTitle": "十五维 · 创始人自画像（ChuangBTI）",
+      "topListTitle": "联创脑回路同频榜 TOP 5",
+      "topListSub": "和你最像的一类「整活版」创始人——按 ChuangBTI 十五维算出来的玩笑榜，不代表该找谁真的合伙。",
+      "topRankFlairs": [
+        "本命联创位",
+        "二号联创备胎位",
+        "TS 桌同桌体质",
+        "路演 PPT 同桌",
+        "飞书已读同类"
+      ],
+      "matchLabel": "ChuangBTI 脑回路重合度",
+      "exactLabel": "十五维精准对齐",
+      "secondaryLabel": "清醒版次佳原型",
+      "shareWatermark": "ChuangBTI · 创始人整活测评 · 与 MBTI 无关 · 仅供娱乐"
+    }
   },
   "drinkGate": {
     "questionId": "drink_gate_q1",

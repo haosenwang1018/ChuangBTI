@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>ChuangBTI · 中国创始人人格整活测试</title>
-  <meta name="description" content="ChuangBTI · 中国创始人特供整活测评（非 MBTI）：融资、条款、联创、路演、对账与死线一锅炖，开源娱乐向。" />
+  <title>ChuangBTI · 创始人人格整活测试</title>
+  <meta name="description" content="ChuangBTI · 创始人特供整活人格测评：创投圈脑回路、融资条款与联创日常一锅炖；与 MBTI 无关，开源娱乐向。" />
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.85em' x='50%25' text-anchor='middle' font-size='72'%3EC%3C/text%3E%3C/svg%3E" />
   <link rel="stylesheet" href="./src/style.css" />
 </head>
@@ -13,11 +13,12 @@
     <!-- 首页 -->
     <section id="page-intro" class="page active">
       <div class="card intro-card">
-        <h1 class="intro-title"><br/>ChuangBTI 创业者人格测评</h1>
-        <button id="btn-start" class="btn btn-primary">开始测试</button>
+        <h1 class="intro-title" id="intro-title">ChuangBTI<br/>创始人整活人格</h1>
+        <p class="intro-lead" id="intro-lead"></p>
+        <button id="btn-start" class="btn btn-primary">开始测我的 ChuangBTI</button>
         <p class="intro-credit"> Remixed by <a href="https://ktwu01.github.io/" target="_blank">Koutian Wu</a></p>
         <p class="intro-credit">开源项目 · 基于 B站UP主@蛆肉儿串儿 原创测试</p>
-        <p class="intro-note">本测试仅供娱乐</p>
+        <p class="intro-note">ChuangBTI 仅供娱乐 · 与 MBTI 无关</p>
       </div>
     </section>
 
@@ -38,7 +39,7 @@
     <!-- 结果页 -->
     <section id="page-result" class="page">
       <div class="card result-card" id="result-card">
-        <div class="result-kicker" id="result-kicker">你的主类型</div>
+        <div class="result-kicker" id="result-kicker">你的 ChuangBTI 创始人原型</div>
         <div class="result-code" id="result-code"></div>
         <div class="result-name" id="result-name"></div>
         <div class="result-badge" id="result-badge"></div>
@@ -46,16 +47,17 @@
         <div class="result-desc" id="result-desc"></div>
 
         <div class="result-secondary" id="result-secondary" style="display:none">
-          <div class="secondary-label">次要匹配</div>
+          <div class="secondary-label" id="secondary-label-static">清醒版次佳原型</div>
           <div class="secondary-info" id="secondary-info"></div>
         </div>
 
-        <h3 class="section-title">十五维度评分</h3>
+        <h3 class="section-title" id="dimensions-section-title">十五维 · 创始人自画像（ChuangBTI）</h3>
         <canvas id="radar-chart" width="320" height="320"></canvas>
         <div class="dimensions-detail" id="dimensions-detail"></div>
 
         <div class="result-top3">
-          <h3 class="section-title">最佳匹配 TOP 5</h3>
+          <h3 class="section-title" id="top-section-title">联创脑回路同频榜 TOP 5</h3>
+          <p class="section-sub" id="top-section-sub"></p>
           <div id="top-list"></div>
         </div>
 

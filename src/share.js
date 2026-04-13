@@ -8,7 +8,8 @@ const LEVEL_LABEL = { L: '低', M: '中', H: '高' }
 /**
  * 生成分享卡片并下载
  */
-export async function generateShareImage(primary, userLevels, dimOrder, dimDefs, mode) {
+export async function generateShareImage(primary, userLevels, dimOrder, dimDefs, mode, config) {
+  const ui = config?.display?.ui || {}
   const dpr = 2
   const W = 720
   const H = 1280
@@ -35,7 +36,12 @@ export async function generateShareImage(primary, userLevels, dimOrder, dimDefs,
   ctx.textAlign = 'center'
   ctx.font = '400 22px system-ui, "PingFang SC", "Microsoft YaHei", sans-serif'
   ctx.fillStyle = '#6b7b6e'
-  const kickerText = mode === 'drunk' ? '敬局彩蛋已触发' : mode === 'fallback' ? '模型对不上账 · 已兜底' : '你的主类型'
+  const kickerText =
+    mode === 'drunk'
+      ? ui.resultKickerDrunk || '敬局彩蛋 · ChuangBTI 隐藏款'
+      : mode === 'fallback'
+        ? ui.resultKickerFallback || '十五维对不上账 · ChuangBTI 兜底款'
+        : ui.resultKickerNormal || '你的 ChuangBTI 创始人原型'
   ctx.fillText(kickerText, W / 2, y)
   y += 56
 
@@ -52,7 +58,10 @@ export async function generateShareImage(primary, userLevels, dimOrder, dimDefs,
   y += 36
 
   // 匹配度徽章
-  const badgeText = `匹配度 ${primary.similarity}%` + (primary.exact != null ? ` · 精准命中 ${primary.exact}/15 维` : '')
+  const matchLabel = ui.matchLabel || 'ChuangBTI 脑回路重合度'
+  const exactLabel = ui.exactLabel || '十五维精准对齐'
+  const badgeText =
+    `${matchLabel} ${primary.similarity}%` + (primary.exact != null ? ` · ${exactLabel} ${primary.exact}/15` : '')
   ctx.font = '500 20px system-ui, "PingFang SC", "Microsoft YaHei", sans-serif'
   const badgeW = ctx.measureText(badgeText).width + 40
   roundRect(ctx, (W - badgeW) / 2, y - 16, badgeW, 36, 18)
@@ -129,7 +138,7 @@ export async function generateShareImage(primary, userLevels, dimOrder, dimDefs,
   ctx.textAlign = 'center'
   ctx.font = '400 18px system-ui, "PingFang SC", "Microsoft YaHei", sans-serif'
   ctx.fillStyle = '#aab8ac'
-  ctx.fillText('ChuangBTI · 中国创始人整活测评 · 仅供娱乐', W / 2, H - cardY - 24)
+  ctx.fillText(ui.shareWatermark || 'ChuangBTI · 创始人整活测评 · 仅供娱乐', W / 2, H - cardY - 24)
 
   // 下载
   const link = document.createElement('a')

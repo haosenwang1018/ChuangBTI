@@ -41,6 +41,15 @@ async function init() {
 
   const quiz = createQuiz(questions, config, onQuizComplete)
 
+  const ui = config.display?.ui || {}
+  if (ui.introTitleHtml) {
+    document.getElementById('intro-title').innerHTML = ui.introTitleHtml
+  }
+  const leadEl = document.getElementById('intro-lead')
+  if (leadEl && ui.introLead) {
+    leadEl.textContent = ui.introLead
+  }
+
   document.getElementById('btn-start').addEventListener('click', () => {
     quiz.start()
     showPage('quiz')

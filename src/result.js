@@ -9,12 +9,17 @@ const LEVEL_CLASS = { L: 'level-low', M: 'level-mid', H: 'level-high' }
  */
 export function renderResult(result, userLevels, dimOrder, dimDefs, config) {
   const { primary, secondary, rankings, mode } = result
+  const ui = config.display?.ui || {}
 
   // Kicker
   const kicker = document.getElementById('result-kicker')
-  if (mode === 'drunk') kicker.textContent = '敬局彩蛋已触发'
-  else if (mode === 'fallback') kicker.textContent = '模型对不上账 · 已兜底'
-  else kicker.textContent = '你的创业者人格类型'
+  if (mode === 'drunk') kicker.textContent = ui.resultKickerDrunk || '敬局彩蛋已触发'
+  else if (mode === 'fallback') kicker.textContent = ui.resultKickerFallback || '模型对不上账 · 已兜底'
+  else kicker.textContent = ui.resultKickerNormal || '你的 ChuangBTI 创始人原型'
+
+  const matchLabel = ui.matchLabel || 'ChuangBTI 脑回路重合度'
+  const exactLabel = ui.exactLabel || '十五维精准对齐'
+  const secondaryLabel = ui.secondaryLabel || '清醒版次佳原型'
 
   // 主类型
   document.getElementById('result-code').textContent = primary.code
@@ -22,18 +27,22 @@ export function renderResult(result, userLevels, dimOrder, dimDefs, config) {
 
   // 匹配度
   document.getElementById('result-badge').textContent =
-    `匹配度 ${primary.similarity}%` + (primary.exact != null ? ` · 精准命中 ${primary.exact}/15 维` : '')
+    `${matchLabel} ${primary.similarity}%` +
+    (primary.exact != null ? ` · ${exactLabel} ${primary.exact}/15` : '')
 
   // Intro & 描述
   document.getElementById('result-intro').textContent = primary.intro || ''
   document.getElementById('result-desc').textContent = primary.desc || ''
+
+  const secLabelEl = document.getElementById('secondary-label-static')
+  if (secLabelEl) secLabelEl.textContent = secondaryLabel
 
   // 次要匹配
   const secEl = document.getElementById('result-secondary')
   if (secondary && (mode === 'drunk' || mode === 'fallback')) {
     secEl.style.display = ''
     document.getElementById('secondary-info').textContent =
-      `${secondary.code}（${secondary.cn}）· 匹配度 ${secondary.similarity}%`
+      `${secondary.code}（${secondary.cn}）· ${matchLabel} ${secondary.similarity}%`
   } else {
     secEl.style.display = 'none'
   }
@@ -62,17 +71,35 @@ export function renderResult(result, userLevels, dimOrder, dimDefs, config) {
     detailEl.appendChild(row)
   }
 
+  const dimTitle = document.getElementById('dimensions-section-title')
+  if (dimTitle && ui.dimensionsSectionTitle) dimTitle.textContent = ui.dimensionsSectionTitle
+  const topTitle = document.getElementById('top-section-title')
+  if (topTitle && ui.topListTitle) topTitle.textContent = ui.topListTitle
+  const topSub = document.getElementById('top-section-sub')
+  if (topSub) {
+    topSub.textContent = ui.topListSub || ''
+    topSub.style.display = ui.topListSub ? '' : 'none'
+  }
+
+  const flairs = Array.isArray(ui.topRankFlairs) ? ui.topRankFlairs : []
+
   // TOP 5
   const topEl = document.getElementById('top-list')
   topEl.innerHTML = ''
   const top5 = rankings.slice(0, 5)
   top5.forEach((t, i) => {
+    const flair = flairs[i] || ''
     const item = document.createElement('div')
     item.className = 'top-item'
     item.innerHTML = `
       <span class="top-rank">#${i + 1}</span>
-      <span class="top-code">${t.code}</span>
-      <span class="top-name">${t.cn}</span>
+      <div class="top-middle">
+        <div class="top-row-main">
+          <span class="top-code">${t.code}</span>
+          <span class="top-name">${t.cn}</span>
+        </div>
+        ${flair ? `<span class="top-flair">${flair}</span>` : ''}
+      </div>
       <span class="top-sim">${t.similarity}%</span>
     `
     topEl.appendChild(item)
@@ -85,7 +112,7 @@ export function renderResult(result, userLevels, dimOrder, dimDefs, config) {
   // 下载分享图
   const btnDownload = document.getElementById('btn-download')
   btnDownload.onclick = () => {
-    generateShareImage(primary, userLevels, dimOrder, dimDefs, mode)
+    generateShareImage(primary, userLevels, dimOrder, dimDefs, mode, config)
   }
 
   // 复制 AI Agent 命令
