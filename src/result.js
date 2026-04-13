@@ -14,7 +14,7 @@ export function renderResult(result, userLevels, dimOrder, dimDefs, config) {
   const kicker = document.getElementById('result-kicker')
   if (mode === 'drunk') kicker.textContent = '敬局彩蛋已触发'
   else if (mode === 'fallback') kicker.textContent = '模型对不上账 · 已兜底'
-  else kicker.textContent = '你的主类型'
+  else kicker.textContent = '你的创业者人格类型'
 
   // 主类型
   document.getElementById('result-code').textContent = primary.code
