@@ -1,14 +1,15 @@
 /**
- * 生成分享图片 — 纯 Canvas 绘制，无外部依赖
+ * 生成分享图片 — 人格大图 + 金句 + 6 轴条形图
  */
-
-const LEVEL_NUM = { L: 1, M: 2, H: 3 }
-const LEVEL_LABEL = { L: '低', M: '中', H: '高' }
 
 /**
- * 生成分享卡片并下载
+ * @param {Object} primary    { code, cn, intro, image }
+ * @param {Object} axisScores { ACT: ..., ... }
+ * @param {Array}  axisOrder
+ * @param {Object} axisDefs
+ * @param {Object} config
  */
-export async function generateShareImage(primary, userLevels, dimOrder, dimDefs, mode, config) {
+export async function generateShareImage(primary, axisScores, axisOrder, axisDefs, config) {
   const ui = config?.display?.ui || {}
   const dpr = 2
   const W = 720
@@ -19,212 +20,120 @@ export async function generateShareImage(primary, userLevels, dimOrder, dimDefs,
   const ctx = canvas.getContext('2d')
   ctx.scale(dpr, dpr)
 
-  // 背景
   ctx.fillStyle = '#f0f4f1'
   ctx.fillRect(0, 0, W, H)
 
-  // 卡片白底
   const cardX = 32, cardY = 32, cardW = W - 64, cardH = H - 64
   roundRect(ctx, cardX, cardY, cardW, cardH, 20)
   ctx.fillStyle = '#ffffff'
   ctx.fill()
-  ctx.shadowColor = 'transparent'
 
   let y = cardY + 48
 
-  // Kicker
   ctx.textAlign = 'center'
-  ctx.font = '400 22px system-ui, "PingFang SC", "Microsoft YaHei", sans-serif'
+  ctx.font = '400 22px system-ui, "PingFang SC", sans-serif'
   ctx.fillStyle = '#6b7b6e'
-  const kickerText =
-    mode === 'drunk'
-      ? ui.resultKickerDrunk || '敬局彩蛋 · ChuangBTI 隐藏款'
-      : mode === 'fallback'
-        ? ui.resultKickerFallback || '十五维对不上账 · ChuangBTI 兜底款'
-        : ui.resultKickerNormal || '你的 ChuangBTI 创始人原型'
-  ctx.fillText(kickerText, W / 2, y)
-  y += 56
+  ctx.fillText(ui.resultKicker || '你的创业者人格', W / 2, y)
+  y += 40
 
-  // 类型代码
-  ctx.font = '900 72px system-ui, "PingFang SC", "Microsoft YaHei", sans-serif'
+  // 人格大图
+  if (primary.image) {
+    try {
+      const img = await loadImage(primary.image)
+      const imgSize = 280
+      ctx.drawImage(img, W / 2 - imgSize / 2, y, imgSize, imgSize)
+      y += imgSize + 24
+    } catch (e) {
+      // 图加载失败不阻塞，留空
+      y += 20
+    }
+  }
+
+  ctx.font = '900 64px system-ui, "PingFang SC", sans-serif'
   ctx.fillStyle = '#4c6752'
   ctx.fillText(primary.code, W / 2, y)
   y += 40
 
-  // 中文名
-  ctx.font = '600 32px system-ui, "PingFang SC", "Microsoft YaHei", sans-serif'
+  ctx.font = '600 30px system-ui, "PingFang SC", sans-serif'
   ctx.fillStyle = '#2c3e2d'
   ctx.fillText(primary.cn, W / 2, y)
-  y += 36
+  y += 40
 
-  // 匹配度徽章
-  const matchLabel = ui.matchLabel || 'ChuangBTI 脑回路重合度'
-  const exactLabel = ui.exactLabel || '十五维精准对齐'
-  const badgeText =
-    `${matchLabel} ${primary.similarity}%` + (primary.exact != null ? ` · ${exactLabel} ${primary.exact}/15` : '')
-  ctx.font = '500 20px system-ui, "PingFang SC", "Microsoft YaHei", sans-serif'
-  const badgeW = ctx.measureText(badgeText).width + 40
-  roundRect(ctx, (W - badgeW) / 2, y - 16, badgeW, 36, 18)
-  ctx.fillStyle = '#e8f0ea'
-  ctx.fill()
-  ctx.fillStyle = '#4c6752'
-  ctx.fillText(badgeText, W / 2, y + 6)
-  y += 44
-
-  // Intro
-  ctx.font = 'italic 600 22px system-ui, "PingFang SC", "Microsoft YaHei", sans-serif'
-  ctx.fillStyle = '#2c3e2d'
+  ctx.font = 'italic 500 20px system-ui, "PingFang SC", sans-serif'
+  ctx.fillStyle = '#6b7b6e'
   const introLines = wrapText(ctx, primary.intro || '', cardW - 80)
   for (const line of introLines) {
     ctx.fillText(line, W / 2, y)
-    y += 30
+    y += 28
   }
-  y += 16
+  y += 24
 
-  // 雷达图
-  const radarCx = W / 2
-  const radarCy = y + 150
-  const radarR = 130
-  drawShareRadar(ctx, radarCx, radarCy, radarR, userLevels, dimOrder, dimDefs)
-  y = radarCy + radarR + 40
-
-  // 维度条形图
-  y += 10
+  // 6 轴条形图
   ctx.textAlign = 'left'
+  const rowH = 56
   const barX = cardX + 48
-  const barMaxW = cardW - 96
-  const dimNameW = 110
+  const barEnd = cardX + cardW - 48
+  const labelW = 80
+  const trackX = barX + labelW
+  const trackEndX = barEnd - labelW
+  const trackW = trackEndX - trackX
+  const midX = trackX + trackW / 2
+  const maxAbs = 4
+  const unit = trackW / 2 / maxAbs
 
-  for (const dim of dimOrder) {
-    const level = userLevels[dim] || 'M'
-    const val = LEVEL_NUM[level]
-    const def = dimDefs[dim]
-    if (!def) continue
+  for (const ax of axisOrder) {
+    const def = axisDefs[ax]
+    const score = axisScores[ax] ?? 0
 
-    const name = def.name.replace(/^[A-Za-z0-9]+\s*/, '')
-
-    // 维度名
-    ctx.font = '600 16px system-ui, "PingFang SC", "Microsoft YaHei", sans-serif'
-    ctx.fillStyle = '#2c3e2d'
-    ctx.fillText(name, barX, y)
-
-    // 进度条背景
-    const progX = barX + dimNameW
-    const progW = barMaxW - dimNameW - 50
-    const progH = 12
-    roundRect(ctx, progX, y - 10, progW, progH, 6)
-    ctx.fillStyle = '#e8f0ea'
-    ctx.fill()
-
-    // 进度条填充
-    const fillW = (val / 3) * progW
-    roundRect(ctx, progX, y - 10, fillW, progH, 6)
-    ctx.fillStyle = val === 3 ? '#2d7a4a' : val === 2 ? '#4c6752' : '#b8860b'
-    ctx.fill()
-
-    // 等级标签
+    ctx.font = '600 16px system-ui, "PingFang SC", sans-serif'
+    ctx.fillStyle = '#6b7b6e'
     ctx.textAlign = 'right'
-    ctx.font = '600 14px system-ui, "PingFang SC", "Microsoft YaHei", sans-serif'
-    ctx.fillStyle = val === 3 ? '#2d7a4a' : val === 2 ? '#4c6752' : '#b8860b'
-    ctx.fillText(LEVEL_LABEL[level], barX + barMaxW, y)
+    ctx.fillText(def?.negLabel || '', trackX - 12, y + 8)
     ctx.textAlign = 'left'
+    ctx.fillText(def?.posLabel || '', trackEndX + 12, y + 8)
+    ctx.textAlign = 'center'
+    ctx.font = '500 13px system-ui, "PingFang SC", sans-serif'
+    ctx.fillStyle = '#aab8ac'
+    ctx.fillText(def?.name || ax, midX, y - 10)
 
-    y += 26
+    const trackCy = y + 8
+    ctx.fillStyle = '#e8f0ea'
+    ctx.fillRect(trackX, trackCy - 5, trackW, 10)
+    ctx.fillStyle = '#aab8ac'
+    ctx.fillRect(midX - 1, trackCy - 10, 2, 20)
+    ctx.fillStyle = '#4c6752'
+    const filled = score * unit
+    if (score >= 0) ctx.fillRect(midX, trackCy - 5, filled, 10)
+    else ctx.fillRect(midX + filled, trackCy - 5, -filled, 10)
+    ctx.beginPath()
+    ctx.arc(midX + filled, trackCy, 6, 0, Math.PI * 2)
+    ctx.fillStyle = '#2c3e2d'
+    ctx.fill()
+
+    y += rowH
   }
 
-  y += 16
-
-  // 底部水印
   ctx.textAlign = 'center'
-  ctx.font = '400 18px system-ui, "PingFang SC", "Microsoft YaHei", sans-serif'
+  ctx.font = '400 16px system-ui, "PingFang SC", sans-serif'
   ctx.fillStyle = '#aab8ac'
-  ctx.fillText(ui.shareWatermark || 'ChuangBTI · 创始人整活测评 · 仅供娱乐', W / 2, H - cardY - 24)
+  ctx.fillText(ui.shareWatermark || 'ChuangBTI · 仅供娱乐', W / 2, H - cardY - 24)
 
-  // 下载
   const link = document.createElement('a')
   link.download = `ChuangBTI-${primary.code}.png`
   link.href = canvas.toDataURL('image/png')
   link.click()
 }
 
-/**
- * 在分享图上绘制雷达图
- */
-function drawShareRadar(ctx, cx, cy, maxR, userLevels, dimOrder, dimDefs) {
-  const n = dimOrder.length
-  const step = (Math.PI * 2) / n
-  const start = -Math.PI / 2
-
-  // 背景圆环
-  for (let lv = 3; lv >= 1; lv--) {
-    const r = (lv / 3) * maxR
-    ctx.beginPath()
-    ctx.arc(cx, cy, r, 0, Math.PI * 2)
-    ctx.fillStyle = lv === 3 ? 'rgba(76,103,82,0.06)' : lv === 2 ? 'rgba(76,103,82,0.04)' : 'rgba(76,103,82,0.02)'
-    ctx.fill()
-    ctx.strokeStyle = 'rgba(76,103,82,0.12)'
-    ctx.lineWidth = 0.5
-    ctx.stroke()
-  }
-
-  // 轴线 + 标签
-  ctx.font = '400 12px system-ui, "PingFang SC", "Microsoft YaHei", sans-serif'
-  ctx.textAlign = 'center'
-  ctx.textBaseline = 'middle'
-
-  for (let i = 0; i < n; i++) {
-    const angle = start + i * step
-    const x = cx + Math.cos(angle) * maxR
-    const y = cy + Math.sin(angle) * maxR
-    ctx.beginPath()
-    ctx.moveTo(cx, cy)
-    ctx.lineTo(x, y)
-    ctx.strokeStyle = 'rgba(76,103,82,0.1)'
-    ctx.lineWidth = 0.5
-    ctx.stroke()
-
-    const lr = maxR + 24
-    const lx = cx + Math.cos(angle) * lr
-    const ly = cy + Math.sin(angle) * lr
-    const label = (dimDefs[dimOrder[i]]?.name || dimOrder[i]).replace(/^[A-Za-z0-9]+\s*/, '')
-    ctx.fillStyle = '#6b7b6e'
-    ctx.fillText(label, lx, ly)
-  }
-
-  // 数据多边形
-  const values = dimOrder.map((d) => LEVEL_NUM[userLevels[d]] || 2)
-  ctx.beginPath()
-  for (let i = 0; i < n; i++) {
-    const angle = start + i * step
-    const r = (values[i] / 3) * maxR
-    const x = cx + Math.cos(angle) * r
-    const y = cy + Math.sin(angle) * r
-    if (i === 0) ctx.moveTo(x, y)
-    else ctx.lineTo(x, y)
-  }
-  ctx.closePath()
-  ctx.fillStyle = 'rgba(76,103,82,0.2)'
-  ctx.fill()
-  ctx.strokeStyle = 'rgba(76,103,82,0.6)'
-  ctx.lineWidth = 2
-  ctx.stroke()
-
-  // 数据点
-  for (let i = 0; i < n; i++) {
-    const angle = start + i * step
-    const r = (values[i] / 3) * maxR
-    const x = cx + Math.cos(angle) * r
-    const y = cy + Math.sin(angle) * r
-    ctx.beginPath()
-    ctx.arc(x, y, 3, 0, Math.PI * 2)
-    ctx.fillStyle = '#4c6752'
-    ctx.fill()
-  }
+function loadImage(src) {
+  return new Promise((resolve, reject) => {
+    const img = new Image()
+    img.crossOrigin = 'anonymous'
+    img.onload = () => resolve(img)
+    img.onerror = reject
+    img.src = src
+  })
 }
 
-/**
- * 圆角矩形
- */
 function roundRect(ctx, x, y, w, h, r) {
   ctx.beginPath()
   ctx.moveTo(x + r, y)
@@ -239,9 +148,6 @@ function roundRect(ctx, x, y, w, h, r) {
   ctx.closePath()
 }
 
-/**
- * 文字自动换行
- */
 function wrapText(ctx, text, maxWidth) {
   if (!text) return []
   const lines = []
