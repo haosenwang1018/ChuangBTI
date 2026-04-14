@@ -516,3 +516,23 @@ a.btn {
     padding: 24px 16px;
   }
 }
+
+/* === 25 人格重构新增样式 === */
+.result-image {
+  display: block;
+  margin: 16px auto 8px;
+  width: 280px;
+  max-width: 80%;
+  height: auto;
+  border-radius: 16px;
+  object-fit: contain;
+}
+
+#axis-chart {
+  display: block;
+  margin: 12px auto;
+  max-width: 100%;
+}
+
+/* 旧类不再用，避免残留样式 */
+.result-badge, .result-secondary, .result-top3, .dimensions-detail { display: none !important; }
