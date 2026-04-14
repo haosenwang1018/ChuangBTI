@@ -5,17 +5,22 @@ import { calcAxisScores, euclideanDistance, isFlex, determineResult } from './en
 
 const AXES = ['ACT', 'RISK', 'TEAM', 'AI', 'SHOW', 'DRIVE']
 
-test('calcAxisScores 累加每题到对应轴', () => {
+test('calcAxisScores 按题选项最大绝对值归一化到 -4..+4', () => {
+  const mkOpts = (vals) => vals.map((v) => ({ value: v }))
   const qs = [
-    { id: 'q1', axis: 'ACT' },
-    { id: 'q2', axis: 'ACT' },
-    { id: 'q3', axis: 'RISK' },
+    { id: 'q1', axis: 'ACT', options: mkOpts([-2, -1, 1, 2]) },
+    { id: 'q2', axis: 'ACT', options: mkOpts([-2, -1, 1, 2]) },
+    { id: 'q3', axis: 'RISK', options: mkOpts([-2, -1, 1, 2]) },
   ]
-  const answers = { q1: 1, q2: -1, q3: 1 }
-  const s = calcAxisScores(answers, qs, AXES)
-  assert.equal(s.ACT, 0)
-  assert.equal(s.RISK, 1)
-  assert.equal(s.TEAM, 0)
+  // 全选满分正端
+  const s1 = calcAxisScores({ q1: 2, q2: 2, q3: 2 }, qs, AXES)
+  assert.equal(s1.ACT, 4)
+  assert.equal(s1.RISK, 4)
+  // 对冲
+  const s2 = calcAxisScores({ q1: 2, q2: -2, q3: 1 }, qs, AXES)
+  assert.equal(s2.ACT, 0)
+  assert.equal(s2.RISK, 2)
+  assert.equal(s2.TEAM, 0)
 })
 
 test('euclideanDistance 0 距离当完全对齐', () => {

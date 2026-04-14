@@ -11,12 +11,20 @@
  * @returns {Object}         { ACT: 3, RISK: -2, ... }
  */
 export function calcAxisScores(answers, questions, axisOrder) {
-  const scores = {}
-  for (const ax of axisOrder) scores[ax] = 0
+  const raw = {}
+  const maxAbs = {}
+  for (const ax of axisOrder) { raw[ax] = 0; maxAbs[ax] = 0 }
   for (const q of questions) {
     const v = answers[q.id]
     if (v == null) continue
-    scores[q.axis] = (scores[q.axis] || 0) + v
+    raw[q.axis] = (raw[q.axis] || 0) + v
+    const optMax = Math.max(...q.options.map((o) => Math.abs(o.value)))
+    maxAbs[q.axis] = (maxAbs[q.axis] || 0) + optMax
+  }
+  // 归一化到 -4..+4 以匹配人格坐标
+  const scores = {}
+  for (const ax of axisOrder) {
+    scores[ax] = maxAbs[ax] > 0 ? +((raw[ax] / maxAbs[ax]) * 4).toFixed(2) : 0
   }
   return scores
 }

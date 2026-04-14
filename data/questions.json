@@ -2,218 +2,367 @@
   "questions": [
     {
       "id": "q_act_1", "axis": "ACT",
-      "text": "看到一个产品 idea，你第一反应是？",
+      "text": "你想到一个新产品 idea，已经在脑子里转了两周。这周末你会？",
       "options": [
-        { "label": "先列需求、画流程、评估可行性", "value": -1 },
-        { "label": "大致想一下就开始打样", "value": 0 },
-        { "label": "先发个 landing page/Demo 看市场反应", "value": 1 }
+        { "label": "再想两周，等逻辑完全闭环再说", "value": -2 },
+        { "label": "写一份详细的 BP 和 roadmap", "value": -1 },
+        { "label": "花一天做个最小 Demo / landing page 试水", "value": 1 },
+        { "label": "周五晚就开干，周一晚已经有用户在用了", "value": 2 }
       ]
     },
     {
       "id": "q_act_2", "axis": "ACT",
-      "text": "新功能完成度 70%，要不要上线？",
+      "text": "新功能完成度 70%，核心路径跑通但细节有瑕疵。你会？",
       "options": [
-        { "label": "不行，得打磨到 95% 再说", "value": -1 },
-        { "label": "看情况，核心路径稳就发", "value": 0 },
-        { "label": "先发，线上反馈比我想的准", "value": 1 }
+        { "label": "不行，至少打磨到 95% 才敢给人看", "value": -2 },
+        { "label": "再留一周内部 QA", "value": -1 },
+        { "label": "先发给种子用户，边用边修", "value": 1 },
+        { "label": "今晚就上线，早一天反馈早一天迭代", "value": 2 }
       ]
     },
     {
       "id": "q_act_3", "axis": "ACT",
-      "text": "长期计划 vs 快速行动，你更偏哪边？",
+      "text": "一个竞争对手下周要发布新功能，你知道了消息。你会？",
       "options": [
-        { "label": "先有 3 个月 roadmap 才踏实", "value": -1 },
-        { "label": "有方向就行，具体周周调", "value": 0 },
-        { "label": "边做边想，计划是做出来的", "value": 1 }
+        { "label": "先观望，看完再决定跟不跟", "value": -2 },
+        { "label": "开会讨论要不要调整路线图", "value": -1 },
+        { "label": "今晚就熬夜做出个精简版先发", "value": 1 },
+        { "label": "已经发了，根本不需要等他们动", "value": 2 }
       ]
     },
     {
       "id": "q_act_4", "axis": "ACT",
-      "text": "周末给自己留时间，你更可能？",
+      "text": "投资人周五说:'周一前给我看个能点的 demo'。你会？",
       "options": [
-        { "label": "复盘 + 看书 + 写思考笔记", "value": -1 },
-        { "label": "一半思考一半动手", "value": 0 },
-        { "label": "直接开干做新东西", "value": 1 }
+        { "label": "回邮件说需要 2 周准备", "value": -2 },
+        { "label": "把现有原型 PPT 化一下应付", "value": -1 },
+        { "label": "通宵搭一个能点的 demo 周日晚发", "value": 1 },
+        { "label": "周六中午就发过去了，还加了一些他没要求的功能", "value": 2 }
       ]
     },
     {
-      "id": "q_risk_1", "axis": "RISK",
-      "text": "账上还有 6 个月现金流，下一笔钱还没到位，你会？",
+      "id": "q_act_5", "axis": "ACT",
+      "text": "你的长期规划和短期行动的关系更像？",
       "options": [
-        { "label": "立刻砍成本、保底活着", "value": -1 },
-        { "label": "一边省一边继续推新功能", "value": 0 },
-        { "label": "梭哈增长、赌下一轮", "value": 1 }
+        { "label": "先画 3 年蓝图，对齐后再说", "value": -2 },
+        { "label": "按季度 OKR 推进，不越矩", "value": -1 },
+        { "label": "方向有了就边跑边调", "value": 1 },
+        { "label": "规划是做出来的，计划书在过程里长出来", "value": 2 }
+      ]
+    },
+    {
+      "id": "q_act_6", "axis": "ACT",
+      "text": "一个朋友跟你说'这事你应该先做用户访谈再写代码'，你会？",
+      "options": [
+        { "label": "有道理，先停下来做 30 个访谈", "value": -2 },
+        { "label": "边访谈边做", "value": -1 },
+        { "label": "先发个 MVP，用真实数据代替访谈", "value": 1 },
+        { "label": "访谈是骗自己用的，直接看谁在用才是真信号", "value": 2 }
+      ]
+    },
+
+    {
+      "id": "q_risk_1", "axis": "RISK",
+      "text": "账上还有 6 个月现金流，下轮融资没眉目。你的第一反应是？",
+      "options": [
+        { "label": "立即砍 30% 成本保命", "value": -2 },
+        { "label": "暂停新招聘，控制节奏", "value": -1 },
+        { "label": "继续推增长，钱可以边跑边找", "value": 1 },
+        { "label": "这是梭哈的好时候，all in 冲增长", "value": 2 }
       ]
     },
     {
       "id": "q_risk_2", "axis": "RISK",
-      "text": "考虑要不要全职 all in 创业？",
+      "text": "一个大厂 Offer 年薪 100 万到了，你的项目刚有 100 个付费用户。你会？",
       "options": [
-        { "label": "留本职做副业，先验证", "value": -1 },
-        { "label": "阶段性裸辞，也可能回头", "value": 0 },
-        { "label": "辞职、卖资产、没有退路", "value": 1 }
+        { "label": "接 Offer，项目先放一放", "value": -2 },
+        { "label": "接 Offer，项目当副业做", "value": -1 },
+        { "label": "拒 Offer，全身心投入项目", "value": 1 },
+        { "label": "早拒了，这种 Offer 对我是干扰", "value": 2 }
       ]
     },
     {
       "id": "q_risk_3", "axis": "RISK",
-      "text": "一个机会窗口期只有 2 周但风险很大，你？",
+      "text": "如果创业意味着连续 2-3 年每天睡 4-5 小时、没有固定收入、感情关系受影响，你会？",
       "options": [
-        { "label": "算账：期望值负我就放弃", "value": -1 },
-        { "label": "拆小赌，下一部分资源", "value": 0 },
-        { "label": "机会比风险重要，上", "value": 1 }
+        { "label": "这代价太大，不能接受", "value": -2 },
+        { "label": "勉强接受，但心里是排斥的", "value": -1 },
+        { "label": "辛苦但愿意", "value": 1 },
+        { "label": "这种节奏反而让我兴奋", "value": 2 }
       ]
     },
     {
       "id": "q_risk_4", "axis": "RISK",
-      "text": "黑天鹅来了（政策/友商/技术变了），你？",
+      "text": "你可以用 5000 块启动一个项目，也可以再等半年攒到 20 万。你的选择？",
       "options": [
-        { "label": "先保命：收缩、等看清再说", "value": -1 },
-        { "label": "一部分继续一部分转向", "value": 0 },
-        { "label": "趁乱调结构，可能反而是机会", "value": 1 }
+        { "label": "等 20 万再启动，准备充分很重要", "value": -2 },
+        { "label": "等到 5 万再开始", "value": -1 },
+        { "label": "5000 就够了，先跑起来", "value": 1 },
+        { "label": "5000 都不用，今晚就能上线", "value": 2 }
       ]
     },
     {
-      "id": "q_team_1", "axis": "TEAM",
-      "text": "理想的团队规模？",
+      "id": "q_risk_5", "axis": "RISK",
+      "text": "一个机会窗口期只有 2 周，但你没有准备好，失败概率 60%。你会？",
       "options": [
-        { "label": "1-2 人，多了就乱", "value": -1 },
-        { "label": "3-8 人，小精悍", "value": 0 },
-        { "label": "规模化，有分工有体系", "value": 1 }
+        { "label": "跳过，这种不确定性我承受不起", "value": -2 },
+        { "label": "算期望值，为负就放弃", "value": -1 },
+        { "label": "上，40% 的胜率够了", "value": 1 },
+        { "label": "压上所有，窗口期永远比胜率重要", "value": 2 }
+      ]
+    },
+    {
+      "id": "q_risk_6", "axis": "RISK",
+      "text": "政策/平台/技术环境突然变化（比如核心 API 被封），你会？",
+      "options": [
+        { "label": "收缩保命，等政策明朗再说", "value": -2 },
+        { "label": "一部分团队继续，一部分探索备选", "value": -1 },
+        { "label": "这是机会，对手比你更慌", "value": 1 },
+        { "label": "趁乱重做一遍，反而能跑出差异化", "value": 2 }
+      ]
+    },
+
+    {
+      "id": "q_team_1", "axis": "TEAM",
+      "text": "公司要从 5 人扩张到 20 人，你会？",
+      "options": [
+        { "label": "想办法维持小团队，20 人太乱", "value": -2 },
+        { "label": "勉强扩，但不愿花时间带人", "value": -1 },
+        { "label": "学管理，主动带团队", "value": 1 },
+        { "label": "这正是我擅长的，开始搭组织", "value": 2 }
       ]
     },
     {
       "id": "q_team_2", "axis": "TEAM",
-      "text": "重大决策卡住时，你更可能？",
+      "text": "你和 2 个合伙人方向产生分歧，你坚持 A，他们都要 B，并且给出了合理数据。你会？",
       "options": [
-        { "label": "自己想清楚再说，不想开会", "value": -1 },
-        { "label": "找 1-2 个关键人聊聊", "value": 0 },
-        { "label": "召集团队，我来拍板", "value": 1 }
+        { "label": "不表态，让他们先决定", "value": -2 },
+        { "label": "跟随多数，B 就 B", "value": -1 },
+        { "label": "再开会沟通三天看能否说服", "value": 1 },
+        { "label": "我拍板 A，错了我担责", "value": 2 }
       ]
     },
     {
       "id": "q_team_3", "axis": "TEAM",
-      "text": "招第一个 key hire，你更看重？",
+      "text": "招第一个 key hire，你会选？",
       "options": [
-        { "label": "自驱、能独立把一块吃下来", "value": -1 },
-        { "label": "既能独立也能和我咬合", "value": 0 },
-        { "label": "能执行我想清楚的方向", "value": 1 }
+        { "label": "最好不招，自己做省事", "value": -2 },
+        { "label": "找一个能独立把一块吃下来的人", "value": -1 },
+        { "label": "和我互补、能咬合的人", "value": 1 },
+        { "label": "能跟着我愿景跑的执行者，我是主轴", "value": 2 }
       ]
     },
     {
       "id": "q_team_4", "axis": "TEAM",
-      "text": "联创和你意见不合，你？",
+      "text": "一个核心成员最近态度散漫、影响士气，但能力很强。你会？",
       "options": [
-        { "label": "算了我自己做，少一个人省事", "value": -1 },
-        { "label": "谁的领域听谁的", "value": 0 },
-        { "label": "我来对齐到同一个方向", "value": 1 }
+        { "label": "能忍就忍，团队不能再震荡", "value": -2 },
+        { "label": "找他谈心、尝试培养", "value": -1 },
+        { "label": "调岗，把他放到不影响团队的位置", "value": 1 },
+        { "label": "直接开除，文化比能力重要", "value": 2 }
       ]
     },
     {
-      "id": "q_ai_1", "axis": "AI",
-      "text": "写一篇产品介绍，你会？",
+      "id": "q_team_5", "axis": "TEAM",
+      "text": "你招到一个技术比你强得多的合伙人，他隐隐有自立门户的想法。你会？",
       "options": [
-        { "label": "亲手写，AI 最多查查资料", "value": -1 },
-        { "label": "AI 起稿 + 我改", "value": 0 },
-        { "label": "prompt 到位、AI 出稿直接用", "value": 1 }
+        { "label": "尽量迁就他，别让他走", "value": -2 },
+        { "label": "暗中找备份人选以防万一", "value": -1 },
+        { "label": "多给股份、诚心共事", "value": 1 },
+        { "label": "主动给最大空间，他要创业我成就他", "value": 2 }
+      ]
+    },
+    {
+      "id": "q_team_6", "axis": "TEAM",
+      "text": "你在团队里最常扮演的角色是？",
+      "options": [
+        { "label": "独立执行者，不喜欢被人管也不管人", "value": -2 },
+        { "label": "普通参与者，该干啥干啥", "value": -1 },
+        { "label": "带领者，会主动拉人做事", "value": 1 },
+        { "label": "发起人/创始人，所有节奏我来定", "value": 2 }
+      ]
+    },
+
+    {
+      "id": "q_ai_1", "axis": "AI",
+      "text": "写一篇产品介绍给潜在投资人，你会？",
+      "options": [
+        { "label": "亲自写，AI 的语感不够", "value": -2 },
+        { "label": "AI 帮我查资料，主体自己写", "value": -1 },
+        { "label": "AI 起稿我改 20%", "value": 1 },
+        { "label": "prompt 到位直接用，投资人也看不出来", "value": 2 }
       ]
     },
     {
       "id": "q_ai_2", "axis": "AI",
-      "text": "要做一个 MVP 功能，你更可能？",
+      "text": "做一个 MVP 需要写代码。你的选择？",
       "options": [
-        { "label": "自己写代码/找工程师", "value": -1 },
-        { "label": "AI 辅助编码，自己把关", "value": 0 },
-        { "label": "全交给 Cursor/Claude Code，我只测结果", "value": 1 }
+        { "label": "自己写或找工程师，AI 生成的代码不敢用", "value": -2 },
+        { "label": "AI 辅助补全，关键逻辑自己写", "value": -1 },
+        { "label": "用 Cursor / Claude Code 主力开发", "value": 1 },
+        { "label": "全交给 agent，我只写 spec 和测结果", "value": 2 }
       ]
     },
     {
       "id": "q_ai_3", "axis": "AI",
-      "text": "重复性任务（回邮件、做报表）你会？",
+      "text": "每天要处理重复工作（回邮件、做周报、整理用户反馈）。你会？",
       "options": [
-        { "label": "自己做，AI 不够稳", "value": -1 },
-        { "label": "偶尔用 AI 提提效", "value": 0 },
-        { "label": "必须做成自动化/AI pipeline", "value": 1 }
+        { "label": "自己做，AI 不够稳", "value": -2 },
+        { "label": "偶尔用 AI 提提效", "value": -1 },
+        { "label": "搭一个小 pipeline 让 AI 跑", "value": 1 },
+        { "label": "已经是全自动化系统，我只看 dashboard", "value": 2 }
       ]
     },
     {
       "id": "q_ai_4", "axis": "AI",
-      "text": "对 AI 在你工作中的定位，你更认同？",
+      "text": "团队要招一个新人，你更可能？",
       "options": [
-        { "label": "辅助参考，核心还得人干", "value": -1 },
-        { "label": "提效工具，能用就用", "value": 0 },
-        { "label": "核心生产力，没它干不动", "value": 1 }
+        { "label": "招一个能独立做事的人", "value": -2 },
+        { "label": "招懂 AI 但也能干活的人", "value": -1 },
+        { "label": "招一个 prompt 好手 + AI 重度用户", "value": 1 },
+        { "label": "不招人，用 agent 搭个虚拟团队", "value": 2 }
       ]
     },
     {
-      "id": "q_show_1", "axis": "SHOW",
-      "text": "做成一个小里程碑，你会？",
+      "id": "q_ai_5", "axis": "AI",
+      "text": "有人说'AI 出的东西还是要人最后把关'，你的态度？",
       "options": [
-        { "label": "自己知道就行，埋头继续", "value": -1 },
-        { "label": "在小圈子里分享下", "value": 0 },
-        { "label": "发朋友圈/推特/小红书", "value": 1 }
+        { "label": "完全同意，AI 就是辅助", "value": -2 },
+        { "label": "大部分时候同意", "value": -1 },
+        { "label": "看场景，很多场景 AI 已经比我好", "value": 1 },
+        { "label": "这是老式思维，好 prompt 不需要把关", "value": 2 }
+      ]
+    },
+    {
+      "id": "q_ai_6", "axis": "AI",
+      "text": "一周时间要出一版新功能。你的工作流？",
+      "options": [
+        { "label": "自己闷头写，AI 最多查查语法", "value": -2 },
+        { "label": "AI 辅助，边写边问", "value": -1 },
+        { "label": "AI 生成 80%，我审查和集成", "value": 1 },
+        { "label": "开 5 个 agent 并行搞，我做总调度", "value": 2 }
+      ]
+    },
+
+    {
+      "id": "q_show_1", "axis": "SHOW",
+      "text": "你的产品拿到第一个付费客户，你会？",
+      "options": [
+        { "label": "自己知道就行，继续做事", "value": -2 },
+        { "label": "在核心小群里告诉几个朋友", "value": -1 },
+        { "label": "发朋友圈 / 小红书 / 推特分享一下", "value": 1 },
+        { "label": "发多平台，配图 + 故事 + tag 媒体", "value": 2 }
       ]
     },
     {
       "id": "q_show_2", "axis": "SHOW",
-      "text": "路演/公开讲话对你来说？",
+      "text": "路演 / 公开讲话对你来说？",
       "options": [
-        { "label": "折磨，能不上就不上", "value": -1 },
-        { "label": "能上，准备充分就行", "value": 0 },
-        { "label": "享受，舞台越大越兴奋", "value": 1 }
+        { "label": "能不上就不上，折磨", "value": -2 },
+        { "label": "上之前紧张，上了就能讲", "value": -1 },
+        { "label": "能上，台上比台下还放松", "value": 1 },
+        { "label": "享受，舞台越大越兴奋", "value": 2 }
       ]
     },
     {
       "id": "q_show_3", "axis": "SHOW",
-      "text": "有媒体想采访你，你？",
+      "text": "有本地媒体想采访你，你会？",
       "options": [
-        { "label": "能推就推，我更想安静做事", "value": -1 },
-        { "label": "看调性再定", "value": 0 },
-        { "label": "来者不拒，曝光就是机会", "value": 1 }
+        { "label": "能推就推，太张扬", "value": -2 },
+        { "label": "看是什么媒体再定", "value": -1 },
+        { "label": "来者不拒，曝光就是机会", "value": 1 },
+        { "label": "主动联系更多媒体，顺势搞一波 PR", "value": 2 }
       ]
     },
     {
       "id": "q_show_4", "axis": "SHOW",
-      "text": "别人问起你在做啥，你更可能？",
+      "text": "别人问你最近在做啥，你的状态？",
       "options": [
-        { "label": "随便说两句，转移话题", "value": -1 },
-        { "label": "简短介绍一下", "value": 0 },
-        { "label": "讲故事、画愿景、拉人入伙", "value": 1 }
+        { "label": "随便说两句，转移话题", "value": -2 },
+        { "label": "简短介绍一下就行", "value": -1 },
+        { "label": "讲故事、讲愿景、想拉人入伙", "value": 1 },
+        { "label": "直接把 pitch 深度讲 15 分钟", "value": 2 }
       ]
     },
     {
-      "id": "q_drive_1", "axis": "DRIVE",
-      "text": "你为什么创业？",
+      "id": "q_show_5", "axis": "SHOW",
+      "text": "你会主动经营个人 IP / 自媒体账号吗？",
       "options": [
-        { "label": "真的热爱这件事，不做难受", "value": -1 },
-        { "label": "既喜欢也想过上更好的生活", "value": 0 },
-        { "label": "想证明自己 / 想赚大钱 / 想被看到", "value": 1 }
+        { "label": "不会，一点兴趣没有", "value": -2 },
+        { "label": "偶尔发发，不刻意经营", "value": -1 },
+        { "label": "有在认真做内容，规律更新", "value": 1 },
+        { "label": "自媒体本身就是我的获客主渠道", "value": 2 }
+      ]
+    },
+    {
+      "id": "q_show_6", "axis": "SHOW",
+      "text": "公司拿到 A 轮融资，要对外官宣。你会？",
+      "options": [
+        { "label": "低调，发个短文案就行，别太张扬", "value": -2 },
+        { "label": "找 1-2 家媒体发就够了", "value": -1 },
+        { "label": "全渠道官宣 + 配发创始人长文", "value": 1 },
+        { "label": "还要做线下活动 + 专访，蹭到最大", "value": 2 }
+      ]
+    },
+
+    {
+      "id": "q_drive_1", "axis": "DRIVE",
+      "text": "你为什么要创业？选最接近的一个：",
+      "options": [
+        { "label": "真的爱这件事，做它本身就是回报", "value": -2 },
+        { "label": "喜欢 + 想要更好的生活", "value": -1 },
+        { "label": "想赚钱、想证明自己、想被看到", "value": 1 },
+        { "label": "必须赢，必须翻身，必须证明给他们看", "value": 2 }
       ]
     },
     {
       "id": "q_drive_2", "axis": "DRIVE",
-      "text": "凌晨两点还在干活，支撑你的是？",
+      "text": "凌晨三点还在干活，支撑你的是？",
       "options": [
-        { "label": "事情本身有趣，停不下来", "value": -1 },
-        { "label": "喜欢也有压力，混着的", "value": 0 },
-        { "label": "不成功不罢休，必须赢", "value": 1 }
+        { "label": "事情本身有意思，停不下来", "value": -2 },
+        { "label": "既喜欢也有压力，混着的", "value": -1 },
+        { "label": "不能输，结果必须出来", "value": 1 },
+        { "label": "证明给当初看不起我的人看", "value": 2 }
       ]
     },
     {
       "id": "q_drive_3", "axis": "DRIVE",
-      "text": "想象成功后的画面，你最先看到？",
+      "text": "想象 5 年后成功，你脑中的第一画面是？",
       "options": [
-        { "label": "这件事自己长成了一个系统", "value": -1 },
-        { "label": "团队、产品、用户都在", "value": 0 },
-        { "label": "财富自由 / 被某些人看见 / 登上舞台", "value": 1 }
+        { "label": "这件事自己长成了一个系统，还在运转", "value": -2 },
+        { "label": "团队、产品、用户都在，好状态", "value": -1 },
+        { "label": "财富自由，可以做想做的事", "value": 1 },
+        { "label": "登上那个舞台，被那些人看到", "value": 2 }
       ]
     },
     {
       "id": "q_drive_4", "axis": "DRIVE",
-      "text": "如果这次创业失败了，你？",
+      "text": "如果这次创业失败了，你最可能？",
       "options": [
-        { "label": "再找下一个让我兴奋的事做", "value": -1 },
-        { "label": "休息一下再说", "value": 0 },
-        { "label": "马上再来一次，必须证明给他们看", "value": 1 }
+        { "label": "再找一个让我兴奋的事做", "value": -2 },
+        { "label": "先休息一段时间", "value": -1 },
+        { "label": "马上再来，必须证明这不是偶然", "value": 1 },
+        { "label": "没有选项，我只有再赢这一条路", "value": 2 }
+      ]
+    },
+    {
+      "id": "q_drive_5", "axis": "DRIVE",
+      "text": "投资人连拒了你 60 次，你的内心状态？",
+      "options": [
+        { "label": "反思这件事是不是做得没意思了", "value": -2 },
+        { "label": "感到挫败，但继续", "value": -1 },
+        { "label": "把他们的拒绝收集起来做名单，以后再回来", "value": 1 },
+        { "label": "我必须让每一个说不的人后悔", "value": 2 }
+      ]
+    },
+    {
+      "id": "q_drive_6", "axis": "DRIVE",
+      "text": "一个目标可能要花 20 年才能实现，过程中不能拿高薪、不能分红。你会？",
+      "options": [
+        { "label": "时间太长，这事本身又没很想做，放弃", "value": -2 },
+        { "label": "做，但得喜欢才愿意", "value": -1 },
+        { "label": "做，这个结果值得", "value": 1 },
+        { "label": "乐意，哪怕最后是我一个人站着", "value": 2 }
       ]
     }
   ]
