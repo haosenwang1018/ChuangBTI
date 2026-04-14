@@ -1,129 +1,81 @@
 /**
- * ChuangBTI 评分引擎 — 纯函数，无 DOM 依赖
+ * ChuangBTI 评分引擎 — 6 轴双极欧氏距离
+ * 纯函数，无 DOM 依赖。
  */
 
 /**
- * 按维度求和：每维度 2 题，分值相加 (范围 2-6)
- * @param {Object} answers  { q1: 2, q3: 1, ... }
- * @param {Array}  questions 题目定义数组
- * @returns {Object} { S1: 5, S2: 3, ... }
+ * 按轴累加用户答案 → 6 维向量
+ * @param {Object} answers   { q_act_1: 1, q_act_2: -1, ... }
+ * @param {Array}  questions 题目定义 [{ id, axis, ... }]
+ * @param {Array}  axisOrder ['ACT','RISK','TEAM','AI','SHOW','DRIVE']
+ * @returns {Object}         { ACT: 3, RISK: -2, ... }
  */
-export function calcDimensionScores(answers, questions) {
+export function calcAxisScores(answers, questions, axisOrder) {
   const scores = {}
+  for (const ax of axisOrder) scores[ax] = 0
   for (const q of questions) {
-    if (answers[q.id] == null) continue
-    scores[q.dim] = (scores[q.dim] || 0) + answers[q.id]
+    const v = answers[q.id]
+    if (v == null) continue
+    scores[q.axis] = (scores[q.axis] || 0) + v
   }
   return scores
 }
 
 /**
- * 原始分 → L/M/H 等级
- * @param {Object} scores      { S1: 5, ... }
- * @param {Object} thresholds  { L: [2,3], M: [4,4], H: [5,6] }
- * @returns {Object} { S1: 'H', S2: 'L', ... }
+ * 欧氏距离
+ * @param {Object} userScores  { ACT: 3, ... }
+ * @param {Array}  coords      [3, 2, 0, -2, 0, -4]
+ * @param {Array}  axisOrder   轴顺序（决定 coords 索引对应关系）
+ * @returns {number}
  */
-export function scoresToLevels(scores, thresholds) {
-  const levels = {}
-  for (const [dim, score] of Object.entries(scores)) {
-    if (score <= thresholds.L[1]) levels[dim] = 'L'
-    else if (score >= thresholds.H[0]) levels[dim] = 'H'
-    else levels[dim] = 'M'
+export function euclideanDistance(userScores, coords, axisOrder) {
+  let sum = 0
+  for (let i = 0; i < axisOrder.length; i++) {
+    const diff = (userScores[axisOrder[i]] ?? 0) - coords[i]
+    sum += diff * diff
   }
-  return levels
+  return Math.sqrt(sum)
 }
 
 /**
- * 等级 → 数值 (L=1, M=2, H=3)
+ * FLEX 触发：每根轴绝对值都 ≤ 阈值
  */
-const LEVEL_NUM = { L: 1, M: 2, H: 3 }
-
-/**
- * 解析人格类型的 pattern 字符串
- * "HHH-HMH-MHH-HHH-MHM" → ['H','H','H','H','M','H','M','H','H','H','H','H','M','H','M']
- */
-export function parsePattern(pattern) {
-  return pattern.replace(/-/g, '').split('')
+export function isFlex(userScores, axisOrder, thresholdAbs = 1) {
+  return axisOrder.every((ax) => Math.abs(userScores[ax] ?? 0) <= thresholdAbs)
 }
 
 /**
- * 计算用户向量与类型 pattern 的曼哈顿距离
- * @param {Object} userLevels  { S1: 'H', S2: 'L', ... }
- * @param {Array}  dimOrder    ['S1','S2','S3','E1',...]
- * @param {string} pattern     "HHH-HMH-MHH-HHH-MHM"
- * @param {number} maxDistance 理论最大曼哈顿距离（与 `config.scoring.maxDistance` 一致，用于相似度分母）
- * @returns {{ distance: number, exact: number, similarity: number }}
+ * 主判定函数
+ * @param {Object} userScores   { ACT: ..., RISK: ..., ... }
+ * @param {Array}  axisOrder
+ * @param {Array}  standardTypes types.json 的 standard 数组
+ * @param {Array}  specialTypes  types.json 的 special 数组（含 FLEX）
+ * @param {Object} options       { maxDistance, flexThresholdAbs }
+ * @returns {{ primary, axisScores, mode }}
  */
-export function matchType(userLevels, dimOrder, pattern, maxDistance = 30) {
-  const typeLevels = parsePattern(pattern)
-  let distance = 0
-  let exact = 0
+export function determineResult(userScores, axisOrder, standardTypes, specialTypes, options = {}) {
+  const { maxDistance = 19.6, flexThresholdAbs = 1 } = options
 
-  for (let i = 0; i < dimOrder.length; i++) {
-    const userVal = LEVEL_NUM[userLevels[dimOrder[i]]] || 2
-    const typeVal = LEVEL_NUM[typeLevels[i]] || 2
-    const diff = Math.abs(userVal - typeVal)
-    distance += diff
-    if (diff === 0) exact++
-  }
-
-  const denom = Math.max(1, maxDistance)
-  const similarity = Math.max(0, Math.round((1 - distance / denom) * 100))
-  return { distance, exact, similarity }
-}
-
-/**
- * 匹配所有类型，排序，应用特殊覆盖
- * @param {Object}  userLevels   { S1: 'H', ... }
- * @param {Array}   dimOrder     维度顺序
- * @param {Array}   standardTypes 标准类型数组
- * @param {Array}   specialTypes  特殊类型数组
- * @param {Object}  options      { isDrunk?: boolean, maxDistance?: number, fallbackThreshold?: number }
- * @returns {{ primary: Object, secondary: Object|null, rankings: Array, mode: string }}
- */
-export function determineResult(userLevels, dimOrder, standardTypes, specialTypes, options = {}) {
-  const {
-    isDrunk = false,
-    maxDistance = 30,
-    fallbackThreshold = 60,
-  } = options
-
-  const rankings = standardTypes.map((type) => ({
-    ...type,
-    ...matchType(userLevels, dimOrder, type.pattern, maxDistance),
-  }))
-
-  // 排序：距离升序 → 精准命中降序 → 相似度降序
-  rankings.sort((a, b) => a.distance - b.distance || b.exact - a.exact || b.similarity - a.similarity)
-
-  const best = rankings[0]
-  const drunk = specialTypes.find((t) => t.code === 'DRUNK')
-  const hhhh = specialTypes.find((t) => t.code === 'HHHH')
-
-  // 敬局型（DRUNK）覆盖
-  if (isDrunk && drunk) {
-    return {
-      primary: { ...drunk, similarity: best.similarity, exact: best.exact },
-      secondary: best,
-      rankings,
-      mode: 'drunk',
+  if (isFlex(userScores, axisOrder, flexThresholdAbs)) {
+    const flex = specialTypes.find((t) => t.code === 'FLEX')
+    if (flex) {
+      return { primary: { ...flex, similarity: 100 }, axisScores: userScores, mode: 'flex' }
     }
   }
 
-  // 对不上账型（HHHH）兜底
-  if (best.similarity < fallbackThreshold && hhhh) {
-    return {
-      primary: { ...hhhh, similarity: best.similarity, exact: best.exact },
-      secondary: best,
-      rankings,
-      mode: 'fallback',
+  let best = null
+  let bestD = Infinity
+  for (const t of standardTypes) {
+    const d = euclideanDistance(userScores, t.coords, axisOrder)
+    if (d < bestD) {
+      bestD = d
+      best = t
     }
   }
-
+  const similarity = Math.max(0, Math.round((1 - bestD / maxDistance) * 100))
   return {
-    primary: best,
-    secondary: rankings[1] || null,
-    rankings,
+    primary: { ...best, similarity, distance: bestD },
+    axisScores: userScores,
     mode: 'normal',
   }
 }

@@ -6,7 +6,8 @@
     "dev": "vite",
     "build": "vite build",
     "build:subdir": "VITE_BASE=/ChuangBTI/ vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "test": "node --test src/*.test.mjs"
   },
   "devDependencies": {
     "vite": "^6.0.0"
