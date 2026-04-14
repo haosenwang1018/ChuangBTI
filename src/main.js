@@ -1,4 +1,4 @@
-import { calcDimensionScores, scoresToLevels, determineResult } from './engine.js'
+import { calcAxisScores, determineResult } from './engine.js'
 import { createQuiz } from './quiz.js'
 import { renderResult } from './result.js'
 
@@ -8,7 +8,7 @@ async function loadJSON(path) {
 }
 
 async function init() {
-  const [questions, dimensions, types, config] = await Promise.all([
+  const [questionsData, dims, types, config] = await Promise.all([
     loadJSON(new URL('../data/questions.json', import.meta.url).href),
     loadJSON(new URL('../data/dimensions.json', import.meta.url).href),
     loadJSON(new URL('../data/types.json', import.meta.url).href),
@@ -27,19 +27,14 @@ async function init() {
     window.scrollTo(0, 0)
   }
 
-  function onQuizComplete(answers, isDrunk) {
-    const scores = calcDimensionScores(answers, questions.main)
-    const levels = scoresToLevels(scores, config.scoring.levelThresholds)
-    const result = determineResult(levels, dimensions.order, types.standard, types.special, {
-      isDrunk,
-      maxDistance: config.scoring.maxDistance,
-      fallbackThreshold: config.scoring.fallbackThreshold,
-    })
-    renderResult(result, levels, dimensions.order, dimensions.definitions, config)
+  function onComplete(answers) {
+    const axisScores = calcAxisScores(answers, questionsData.questions, dims.order)
+    const result = determineResult(axisScores, dims.order, types.standard, types.special, config.scoring)
+    renderResult(result, axisScores, dims.order, dims.definitions, config)
     showPage('result')
   }
 
-  const quiz = createQuiz(questions, config, onQuizComplete)
+  const quiz = createQuiz(questionsData, config, onComplete)
 
   const ui = config.display?.ui || {}
   if (ui.introTitleHtml) {
