@@ -40,9 +40,12 @@ export async function generateShareImage(primary, axisScores, axisOrder, axisDef
   if (primary.image) {
     try {
       const img = await loadImage(primary.image)
-      const imgSize = 280
-      ctx.drawImage(img, W / 2 - imgSize / 2, y, imgSize, imgSize)
-      y += imgSize + 24
+      const maxSize = 280
+      const ratio = img.naturalWidth / img.naturalHeight
+      const drawW = ratio >= 1 ? maxSize : maxSize * ratio
+      const drawH = ratio >= 1 ? maxSize / ratio : maxSize
+      ctx.drawImage(img, W / 2 - drawW / 2, y, drawW, drawH)
+      y += drawH + 24
     } catch (e) {
       // 图加载失败不阻塞，留空
       y += 20
