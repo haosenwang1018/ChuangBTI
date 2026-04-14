@@ -1,103 +1,79 @@
 /**
- * 雷达图渲染 — Canvas API，无外部依赖
+ * 6 轴双极条形图 — Canvas API，无外部依赖
  */
-
-const LEVEL_NUM = { L: 1, M: 2, H: 3 }
 
 /**
- * 绘制 15 维度雷达图
  * @param {HTMLCanvasElement} canvas
- * @param {Object} userLevels  { S1: 'H', S2: 'L', ... }
- * @param {Array}  dimOrder    ['S1','S2',...]
- * @param {Object} dimDefs     维度定义 { S1: { name: '自尊自信', ... }, ... }
+ * @param {Object} axisScores { ACT: 3, RISK: -2, ... }
+ * @param {Array}  axisOrder  ['ACT','RISK',...]
+ * @param {Object} axisDefs   dimensions.json 的 definitions
  */
-export function drawRadar(canvas, userLevels, dimOrder, dimDefs) {
-  const ctx = canvas.getContext('2d')
+export function drawBipolarBars(canvas, axisScores, axisOrder, axisDefs) {
   const dpr = window.devicePixelRatio || 1
-  const size = 320
-  canvas.width = size * dpr
-  canvas.height = size * dpr
-  canvas.style.width = size + 'px'
-  canvas.style.height = size + 'px'
+  const W = 360
+  const rowH = 44
+  const H = rowH * axisOrder.length + 16
+  canvas.width = W * dpr
+  canvas.height = H * dpr
+  canvas.style.width = W + 'px'
+  canvas.style.height = H + 'px'
+  const ctx = canvas.getContext('2d')
   ctx.scale(dpr, dpr)
+  ctx.clearRect(0, 0, W, H)
 
-  const cx = size / 2
-  const cy = size / 2
-  const maxR = size / 2 - 40
-  const n = dimOrder.length
-  const angleStep = (Math.PI * 2) / n
-  const startAngle = -Math.PI / 2
+  const labelW = 72
+  const trackX = labelW
+  const trackW = W - labelW - 16
+  const midX = trackX + trackW / 2
+  const maxAbs = 4
+  const unit = trackW / 2 / maxAbs
 
-  ctx.clearRect(0, 0, size, size)
-
-  // 背景圆环 (3层: L=1, M=2, H=3)
-  for (let level = 3; level >= 1; level--) {
-    const r = (level / 3) * maxR
-    ctx.beginPath()
-    ctx.arc(cx, cy, r, 0, Math.PI * 2)
-    ctx.fillStyle = level === 3 ? 'rgba(76, 103, 82, 0.08)' : level === 2 ? 'rgba(76, 103, 82, 0.05)' : 'rgba(76, 103, 82, 0.03)'
-    ctx.fill()
-    ctx.strokeStyle = 'rgba(76, 103, 82, 0.15)'
-    ctx.lineWidth = 0.5
-    ctx.stroke()
-  }
-
-  // 轴线 + 标签
-  ctx.font = '10px system-ui, sans-serif'
-  ctx.textAlign = 'center'
+  ctx.font = '600 13px system-ui, "PingFang SC", sans-serif'
   ctx.textBaseline = 'middle'
 
-  for (let i = 0; i < n; i++) {
-    const angle = startAngle + i * angleStep
-    const x = cx + Math.cos(angle) * maxR
-    const y = cy + Math.sin(angle) * maxR
+  axisOrder.forEach((ax, i) => {
+    const def = axisDefs[ax]
+    const score = axisScores[ax] ?? 0
+    const cy = 16 + i * rowH
 
-    // 轴线
-    ctx.beginPath()
-    ctx.moveTo(cx, cy)
-    ctx.lineTo(x, y)
-    ctx.strokeStyle = 'rgba(76, 103, 82, 0.12)'
-    ctx.lineWidth = 0.5
-    ctx.stroke()
-
-    // 标签
-    const labelR = maxR + 22
-    const lx = cx + Math.cos(angle) * labelR
-    const ly = cy + Math.sin(angle) * labelR
-    const dim = dimOrder[i]
-    const label = dimDefs[dim]?.name?.replace(/^[A-Za-z0-9]+\s*/, '') || dim
+    // 负端标签
     ctx.fillStyle = '#6b7b6e'
-    ctx.fillText(label, lx, ly)
-  }
+    ctx.textAlign = 'right'
+    ctx.fillText(def?.negLabel || '', labelW - 8, cy + rowH / 2 - 2)
 
-  // 数据多边形
-  const values = dimOrder.map((dim) => LEVEL_NUM[userLevels[dim]] || 2)
+    // 正端标签
+    ctx.textAlign = 'left'
+    ctx.fillText(def?.posLabel || '', W - 12, cy + rowH / 2 - 2)
 
-  ctx.beginPath()
-  for (let i = 0; i < n; i++) {
-    const angle = startAngle + i * angleStep
-    const r = (values[i] / 3) * maxR
-    const x = cx + Math.cos(angle) * r
-    const y = cy + Math.sin(angle) * r
-    if (i === 0) ctx.moveTo(x, y)
-    else ctx.lineTo(x, y)
-  }
-  ctx.closePath()
-  ctx.fillStyle = 'rgba(76, 103, 82, 0.25)'
-  ctx.fill()
-  ctx.strokeStyle = 'rgba(76, 103, 82, 0.7)'
-  ctx.lineWidth = 2
-  ctx.stroke()
+    // 轴名
+    ctx.font = '500 11px system-ui, "PingFang SC", sans-serif'
+    ctx.textAlign = 'center'
+    ctx.fillStyle = '#aab8ac'
+    ctx.fillText(def?.name || ax, midX, cy + 4)
+    ctx.font = '600 13px system-ui, "PingFang SC", sans-serif'
 
-  // 数据点
-  for (let i = 0; i < n; i++) {
-    const angle = startAngle + i * angleStep
-    const r = (values[i] / 3) * maxR
-    const x = cx + Math.cos(angle) * r
-    const y = cy + Math.sin(angle) * r
-    ctx.beginPath()
-    ctx.arc(x, y, 3, 0, Math.PI * 2)
+    // 轨道
+    const trackCy = cy + rowH / 2 + 8
+    ctx.fillStyle = '#e8f0ea'
+    ctx.fillRect(trackX, trackCy - 4, trackW, 8)
+
+    // 中线
+    ctx.fillStyle = '#aab8ac'
+    ctx.fillRect(midX - 1, trackCy - 8, 2, 16)
+
+    // 填充条
+    const filled = score * unit
     ctx.fillStyle = '#4c6752'
+    if (score >= 0) {
+      ctx.fillRect(midX, trackCy - 4, filled, 8)
+    } else {
+      ctx.fillRect(midX + filled, trackCy - 4, -filled, 8)
+    }
+
+    // 点
+    ctx.beginPath()
+    ctx.arc(midX + filled, trackCy, 5, 0, Math.PI * 2)
+    ctx.fillStyle = '#2c3e2d'
     ctx.fill()
-  }
+  })
 }
