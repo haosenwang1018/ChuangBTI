@@ -28,7 +28,7 @@
         <div class="progress-bar">
           <div class="progress-fill" id="progress-fill"></div>
         </div>
-        <div class="progress-text" id="progress-text">0 / 31</div>
+        <div class="progress-text" id="progress-text">0 / 24</div>
         <div class="question-area">
           <p class="question-text" id="question-text"></p>
         </div>
@@ -39,27 +39,15 @@
     <!-- 结果页 -->
     <section id="page-result" class="page">
       <div class="card result-card" id="result-card">
-        <div class="result-kicker" id="result-kicker">你的 ChuangBTI 创始人原型</div>
+        <div class="result-kicker" id="result-kicker">你的创业者人格</div>
+        <img id="result-image" class="result-image" alt="" />
         <div class="result-code" id="result-code"></div>
         <div class="result-name" id="result-name"></div>
-        <div class="result-badge" id="result-badge"></div>
         <div class="result-intro" id="result-intro"></div>
         <div class="result-desc" id="result-desc"></div>
 
-        <div class="result-secondary" id="result-secondary" style="display:none">
-          <div class="secondary-label" id="secondary-label-static">清醒版次佳原型</div>
-          <div class="secondary-info" id="secondary-info"></div>
-        </div>
-
-        <h3 class="section-title" id="dimensions-section-title">十五维 · 创始人自画像（ChuangBTI）</h3>
-        <canvas id="radar-chart" width="320" height="320"></canvas>
-        <div class="dimensions-detail" id="dimensions-detail"></div>
-
-        <div class="result-top3">
-          <h3 class="section-title" id="top-section-title">联创脑回路同频榜 TOP 5</h3>
-          <p class="section-sub" id="top-section-sub"></p>
-          <div id="top-list"></div>
-        </div>
+        <h3 class="section-title" id="axis-section-title">你的 6 轴画像</h3>
+        <canvas id="axis-chart"></canvas>
 
         <div class="disclaimer" id="disclaimer"></div>
 
@@ -71,16 +59,9 @@
         <div class="agent-section">
           <p class="agent-title">想自己搭一个？</p>
           <div class="agent-cmd">
-            <code>git clone https://github.com/ktwu01/ChuangBTI.git && cd ChuangBTI && npm install && npm run dev</code>
+            <code>git clone https://github.com/haosenwang1018/ChuangBTI.git && cd ChuangBTI && npm install && npm run dev</code>
           </div>
           <button id="btn-agent" class="btn btn-agent">复制一键部署命令</button>
-          <p class="agent-hint">粘贴到 Claude Code / OpenClaw 即可一键运行并自定义<br />Remixed by <a href="https://ktwu01.github.io/" target="_blank" rel="noopener noreferrer">Koutian Wu</a> @SP1</p>
-        </div>
-
-        <div class="agent-section">
-          <p class="agent-title">北美 F1 创业者生存手册</p>
-          <p class="agent-resource-desc">给在北美的中文 F1 创业者与准创业者的一份生存手册。核心理念：进攻和退路都要有。</p>
-          <a href="https://github.com/ktwu01/f1-founder-survival-guide" class="btn btn-secondary" target="_blank" rel="noopener noreferrer">查看 GitHub 仓库</a>
         </div>
       </div>
     </section>
