@@ -16,26 +16,38 @@ export function createQuiz(questionsData, config, onComplete) {
     text: document.getElementById('progress-text'),
     qText: document.getElementById('question-text'),
     options: document.getElementById('options'),
+    prev: document.getElementById('btn-prev'),
   }
+
+  if (els.prev) els.prev.addEventListener('click', goPrev)
 
   function updateProgress() {
     const pct = (current / queue.length) * 100
     els.fill.style.width = pct + '%'
-    els.text.textContent = `${current} / ${queue.length}`
+    els.text.textContent = `${current + 1} / ${queue.length}`
   }
 
   function renderQuestion() {
     const q = queue[current]
     els.qText.textContent = q.text
     els.options.innerHTML = ''
+    const picked = answers[q.id]
     q.options.forEach((opt) => {
       const btn = document.createElement('button')
       btn.className = 'btn btn-option'
+      if (picked !== undefined && picked === opt.value) btn.classList.add('selected')
       btn.textContent = opt.label
       btn.addEventListener('click', () => selectOption(q, opt))
       els.options.appendChild(btn)
     })
+    if (els.prev) els.prev.disabled = current === 0
     updateProgress()
+  }
+
+  function goPrev() {
+    if (current === 0) return
+    current--
+    renderQuestion()
   }
 
   function selectOption(question, option) {

@@ -536,3 +536,7 @@ a.btn {
 
 /* 旧类不再用，避免残留样式 */
 .result-badge, .result-secondary, .result-top3, .dimensions-detail { display: none !important; }
+
+.quiz-nav { display: flex; justify-content: flex-start; margin-top: 16px; }
+.quiz-nav .btn[disabled] { opacity: 0.4; cursor: not-allowed; }
+.btn-option.selected { border-color: #4c6752; background: #e8f0ea; }
