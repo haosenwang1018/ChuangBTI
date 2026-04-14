@@ -12,32 +12,34 @@ Remixed by [Koutian Wu](https://ktwu01.github.io/)
 
 ## 特性
 
-- **27 种人格类型** — 25 种标准类型 + 2 种隐藏/兜底类型
-- **15 个评估维度** — 自我、情感、态度、行动、社交五大模型
-- **曼哈顿距离匹配** — 基于 15 维向量的匹配与相似度
-- **隐藏彩蛋** — 「敬局型创始人」饭局门控触发机制
+- **25 种创业者人格** — 覆盖驱力型、风格型、AI 风格型、叙事型
+- **6 根双极轴** — 行动 / 风险 / 协作 / AI / 叙事 / 驱动源
+- **欧氏距离匹配** — 24 题 → 6 维向量 → 最近人格
+- **FLEX 特殊触发** — 所有轴得分都接近 0 时判为变色龙
+- **人格大图** — 每个结果带专属插画
 - **移动端优先** — 响应式布局
-- **易于定制** — 数据在 `data/*.json`，改 JSON 即可
+- **易于定制** — 数据都在 `data/*.json`
 
 ## 项目结构
 
 ```
-├── data/                    # 测试数据（修改这里来定制）
-│   ├── questions.json       # 题目和选项
-│   ├── dimensions.json      # 15个维度定义
-│   ├── types.json           # 人格类型和匹配模式
-│   └── config.json          # 评分参数和显示配置
-├── src/                     # 源代码
-│   ├── engine.js            # 评分算法（纯函数）
-│   ├── quiz.js              # 答题流程控制
-│   ├── result.js            # 结果页渲染
-│   ├── chart.js             # 雷达图（Canvas API）
-│   ├── utils.js             # 工具函数
-│   ├── main.js              # 入口
-│   └── style.css            # 样式（CSS变量主题化）
-├── docs/
-│   └── analysis.md          # 数据分析报告
-└── index.html
+├── data/
+│   ├── dimensions.json   # 6 轴定义
+│   ├── questions.json    # 24 题
+│   ├── types.json        # 25 人格 + 6 维坐标
+│   └── config.json       # UI 文案、评分参数
+├── public/personas/      # 25 张人格图
+├── src/
+│   ├── engine.js         # 双极累加 + 欧氏距离 + FLEX
+│   ├── engine.test.mjs   # node:test 自测
+│   ├── chart.js          # 双极条形图（Canvas）
+│   ├── quiz.js           # 答题流程
+│   ├── result.js         # 结果页渲染（含人格大图）
+│   ├── share.js          # 分享卡生成
+│   └── main.js           # 入口
+└── docs/
+    ├── personas.md       # 25 人格定义原文
+    └── superpowers/      # 设计 spec + 实施计划
 ```
 
 ## 快速开始
@@ -61,92 +63,6 @@ npm run build
 # 若站点必须挂在固定子路径（如仅支持 /ChuangBTI/ 绝对前缀）
 npm run build:subdir
 ```
-
-## 定制你自己的测试
-
-所有测试内容都在 `data/` 目录下，修改 JSON 文件即可定制，无需改动代码。
-
-### 修改题目
-
-编辑 `data/questions.json`，每道题的结构：
-
-```json
-{
-  "id": "q1",
-  "dim": "S1",
-  "text": "你的题目文字",
-  "options": [
-    { "label": "选项A", "value": 1 },
-    { "label": "选项B", "value": 2 },
-    { "label": "选项C", "value": 3 }
-  ]
-}
-```
-
-- `dim` 指定该题属于哪个维度
-- `value` 分值：1=低, 2=中, 3=高
-- 每个维度需要恰好 2 道题
-
-### 添加新人格类型
-
-编辑 `data/types.json`，在 `standard` 数组中添加：
-
-```json
-{
-  "code": "YOUR",
-  "pattern": "HHH-HMH-MHH-HHH-MHM",
-  "cn": "你的类型名",
-  "intro": "一句话简介",
-  "desc": "详细描述..."
-}
-```
-
-`pattern` 是 15 个字母的 L/M/H 组合（按维度顺序：S1-S3, E1-E3, A1-A3, Ac1-Ac3, So1-So3），用 `-` 分隔每个模型。
-
-### 调整评分参数
-
-编辑 `data/config.json`：
-
-```json
-{
-  "scoring": {
-    "levelThresholds": { "L": [2, 3], "M": [4, 4], "H": [5, 6] },
-    "maxDistance": 30,
-    "fallbackThreshold": 60
-  }
-}
-```
-
-- `maxDistance`：相似度公式分母（默认 15 维 × 每维最大差 2 = 30）
-- `fallbackThreshold`：ChuangBTI 主原型相似度低于该百分数时落入 HHHH「对不上账型」兜底
-
-### 部署路径（GitHub Pages）
-
-- 默认 `npm run build` 使用 **`base: './'`**，`dist/` 内为相对路径，适合挂在 `https://<user>.github.io/<repo>/`。
-- 若必须用绝对前缀 `/ChuangBTI/`，使用 `npm run build:subdir` 或设置环境变量：`VITE_BASE=/你的仓库名/ npm run build`。
-
-### 修改主题样式
-
-编辑 `src/style.css` 顶部的 CSS 变量：
-
-```css
-:root {
-  --bg: #f0f4f1;
-  --accent: #4c6752;
-  /* ... */
-}
-```
-
-## 评分算法
-
-1. **求和**：每维度 2 题分值相加（范围 2-6）
-2. **分级**：≤3 → L（低），4 → M（中），≥5 → H（高）
-3. **向量化**：L=1, M=2, H=3，生成 15 维数值向量
-4. **匹配**：计算用户向量与每种类型的曼哈顿距离
-5. **排名**：距离升序 → 精准命中降序 → 相似度降序
-6. **特殊覆盖**：敬局彩蛋 > 正常匹配 > 对不上账兜底（相似度低于 `config.scoring.fallbackThreshold`，默认 60）
-
-详见 [数据分析报告](docs/analysis.md)。
 
 ## 部署
 
