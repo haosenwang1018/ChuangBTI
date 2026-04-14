@@ -13,7 +13,7 @@ export async function generateShareImage(primary, axisScores, axisOrder, axisDef
   const ui = config?.display?.ui || {}
   const dpr = 2
   const W = 720
-  const H = 1280
+  const H = 1040
   const canvas = document.createElement('canvas')
   canvas.width = W * dpr
   canvas.height = H * dpr
